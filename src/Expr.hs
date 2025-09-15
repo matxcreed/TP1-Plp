@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-{-# HLINT ignore "Redundant lambda" #-}
-{-# HLINT ignore "Redundant bracket" #-}
 module Expr
   ( Expr (..),
     recrExpr,
