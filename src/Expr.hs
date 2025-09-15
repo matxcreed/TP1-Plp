@@ -85,15 +85,15 @@ evalHistograma m n expr = armarHistograma m n (eval expr)
 -- En particular queremos evitar paréntesis en sumas y productos anidados.
 mostrar :: Expr -> String
 mostrar = recrExpr show (\x y -> show x ++ "~" ++ show y)
-                        (\e1 e2 r1 r2 -> (maybeParen (parEnSuma e1) r1) ++ " + " ++ (maybeParen (parEnSuma e2) r2))
-                        (\e1 e2 r1 r2 -> (maybeParen (parEnResta e1) r1) ++ " - " ++ (maybeParen (parEnResta e2) r2))
-                        (\e1 e2 r1 r2 -> (maybeParen (parEnMult e1) r1) ++ " * " ++ (maybeParen (parEnMult e2) r2))
-                        (\e1 e2 r1 r2 -> (maybeParen (parEnDiv e1) r1) ++ " / " ++ (maybeParen (parEnDiv e2) r2))
+                        (\e1 e2 r1 r2 -> maybeParen (parEnSuma e1) r1 ++ " + " ++ maybeParen (parEnSuma e2) r2)
+                        (\e1 e2 r1 r2 -> maybeParen (parEnResta e1) r1 ++ " - " ++ maybeParen (parEnResta e2) r2)
+                        (\e1 e2 r1 r2 -> maybeParen (parEnMult e1) r1 ++ " * " ++ maybeParen (parEnMult e2) r2)
+                        (\e1 e2 r1 r2 -> maybeParen (parEnDiv e1) r1 ++ " / " ++ maybeParen (parEnDiv e2) r2)
 
-          where parEnSuma =  \e -> constructor e == CEResta || constructor e == CEMult || constructor e == CEDiv
-                parEnResta = \e -> constructor e == CEResta || constructor e == CESuma || constructor e == CEMult || constructor e == CEDiv
-                parEnMult =  \e -> constructor e == CEResta || constructor e == CESuma || constructor e == CEDiv
-                parEnDiv =   \e -> constructor e == CEResta || constructor e == CEMult || constructor e == CESuma
+          where parEnSuma e = constructor e == CEResta || constructor e == CEMult || constructor e == CEDiv
+                parEnResta e = constructor e == CEResta || constructor e == CESuma || constructor e == CEMult || constructor e == CEDiv
+                parEnMult e = constructor e == CEResta || constructor e == CESuma || constructor e == CEDiv
+                parEnDiv e = constructor e == CEResta || constructor e == CEMult || constructor e == CESuma
 
 data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv
   deriving (Show, Eq)
