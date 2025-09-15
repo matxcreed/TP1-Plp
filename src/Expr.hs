@@ -11,6 +11,7 @@ where
 
 import Generador
 import Histograma
+import GHC.Arr (listArray)
 
 -- | Expresiones aritméticas con rangos
 data Expr
@@ -61,10 +62,16 @@ eval  = foldExpr (\x -> dameUno (x,x))
                  (\e1 e2 gen -> (fst (e1 gen) * fst (e2 gen),snd (e1 gen)))
                  (\e1 e2 gen -> (fst (e1 gen) / fst (e2 gen),snd (e1 gen)))
 
+-- | toma n muestras de f y las pone en una lista
+genLista :: Int -> G Float -> ([Float], Gen)
+genLista n = error "COMPLETAR EJERCICIO 9, la fcion auxiliar genLista"
+
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
 armarHistograma :: Int -> Int -> G Float -> G Histograma
-armarHistograma m n f g = error "COMPLETAR EJERCICIO 9"
+armarHistograma m n f = \gen -> (histograma m rango (fst lista), (snd lista))
+                        where lista = genLista n f
+                              rango = rango95 (fst lista)
 
 -- | @evalHistograma m n e g@ evalúa la expresión @e@ usando el generador @g@ @n@ veces
 -- devuelve un histograma con @m@ casilleros y rango calculado con @rango95@ para abarcar el 95% de confianza de los valores.

@@ -40,9 +40,9 @@ agregar x (Histograma i t cs) = Histograma i t (actualizarElem pos (+1) cs)
                                       pos = ubicarPos x lista
 
 listaDeIntervalos:: Histograma-> [(Float,Float)]
-listaDeIntervalos (Histograma i t cs) = [ if j==0 then (infinitoNegativo,i) 
-                                          else if j==len then(i+t*(fromIntegral (j-1)),infinitoPositivo) 
-                                          else (i+t*(fromIntegral (j-1)),i+t*((fromIntegral (j-1))+1))| j <- [0..len]] 
+listaDeIntervalos (Histograma i t cs) = [ if j==0 then (infinitoNegativo,i)
+                                          else if j==len then(i+t*fromIntegral (j-1),infinitoPositivo)
+                                          else (i+t*fromIntegral (j-1),i+t*(fromIntegral (j-1)+1))| j <- [0..len]]
                                       where len = length cs - 1
 
 ubicarPos:: Float -> [(Float,Float)] -> Int
@@ -75,6 +75,6 @@ casPorcentaje (Casillero _ _ _ p) = p
 
 -- | Dado un histograma, devuelve la lista de casilleros con sus límites, cantidad y porcentaje.
 casilleros :: Histograma -> [Casillero]
-casilleros (Histograma i t cs) = zipWith(\n (j,k) -> Casillero j k n (((fromIntegral n)/total)*100.0)) cs intervalos
-                            where total = fromIntegral(sum cs)
+casilleros (Histograma i t cs) = zipWith (\n (j,k) -> Casillero j k n ((fromIntegral n/total)*100.0)) cs intervalos
+                            where total = fromIntegral (sum cs)
                                   intervalos = listaDeIntervalos (Histograma i t cs)
