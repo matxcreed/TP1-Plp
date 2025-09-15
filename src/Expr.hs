@@ -23,14 +23,32 @@ data Expr
   deriving (Show, Eq)
 
 -- recrExpr :: ... anotar el tipo ...
-recrExpr = error "COMPLETAR EJERCICIO 7"
+recrExpr (a->b)->(a->a->b)->(a->a->b->b->b)->(a->a->b->b->b)->(a->a->b->b->b)-> Expr -> b
+recrExpr cnst rango suma resta mult div exp = case exp of 
+                                              Const x   -> cnst x 
+                                              Rango x y -> rango x y 
+                                              Suma x y  -> suma x y  (rec x) (rec y)
+                                              Resta x y -> resta x y (rec x) (rec y)
+                                              Mult x  y -> mult x y  (rec x) (rec y)
+                                              Div x  y  -> div  x y  (rec x) (rec y)
+                                              where rec = recrExpr cnst rango suma resta mult div
 
 -- foldExpr :: ... anotar el tipo ...
-foldExpr = error "COMPLETAR EJERCICIO 7"
+foldExpr (a->b)->(a->a->b)->(b->b->b)->(b->b->b)->(b->b->b)->(b->b->b)-> Expr -> b
+foldExpr cnst rango suma resta mult div exp = case exp of 
+                                              Const x   -> cnst x 
+                                              Rango x y -> rango x y 
+                                              Suma x y  -> suma  (rec x) (rec y)
+                                              Resta x y -> resta (rec x) (rec y)
+                                              Mult x  y -> mult  (rec x) (rec y)
+                                              Div x  y  -> div   (rec x) (rec y)
+                                              where rec = foldExpr cnst rango suma resta mult div
+
+
 
 -- | Evaluar expresiones dado un generador de números aleatorios
 eval :: Expr -> G Float
-eval = error "COMPLETAR EJERCICIO 8"
+eval  = foldr (id) (\r1 r2 -> conGenNormal (dameUno (r1, r2))) (\e1 e2 -> (fst e1 + fst e2,snd e1)) (\e1 e2 -> (fst e1 - fst e2,snd e1)) (\e1 e2 -> (fst e1 * fst e2,snd e1)) (/)
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
