@@ -23,10 +23,14 @@ data Expr
   deriving (Show, Eq)
 
 -- recrExpr :: ... anotar el tipo ...
-recrExpr (a->b)->(a->a->b)->(a->a->b->b->b)->(a->a->b->b->b)->(a->a->b->b->b)-> Expr -> b
-recrExpr cnst rango suma resta mult div exp = case exp of 
-                                              Const x   -> cnst x 
-                                              Rango x y -> rango x y 
+recrExpr :: (Float->b)->(Float->Float->b)->
+            (Expr->Expr->b->b->b)->
+            (Expr->Expr->b->b->b)->
+            (Expr->Expr->b->b->b)->
+            (Expr->Expr->b->b->b)-> Expr -> b
+recrExpr cnst rango suma resta mult div exp = case exp of
+                                              Const x   -> cnst x
+                                              Rango x y -> rango x y
                                               Suma x y  -> suma x y  (rec x) (rec y)
                                               Resta x y -> resta x y (rec x) (rec y)
                                               Mult x  y -> mult x y  (rec x) (rec y)
@@ -34,10 +38,12 @@ recrExpr cnst rango suma resta mult div exp = case exp of
                                               where rec = recrExpr cnst rango suma resta mult div
 
 -- foldExpr :: ... anotar el tipo ...
-foldExpr (a->b)->(a->a->b)->(b->b->b)->(b->b->b)->(b->b->b)->(b->b->b)-> Expr -> b
-foldExpr cnst rango suma resta mult div exp = case exp of 
-                                              Const x   -> cnst x 
-                                              Rango x y -> rango x y 
+foldExpr :: (Float->b)->(Float->Float->b)->(b->b->b)->
+                    (b->b->b)->(b->b->b)->
+                    (b->b->b)-> Expr -> b
+foldExpr cnst rango suma resta mult div exp = case exp of
+                                              Const x   -> cnst x
+                                              Rango x y -> rango x y
                                               Suma x y  -> suma  (rec x) (rec y)
                                               Resta x y -> resta (rec x) (rec y)
                                               Mult x  y -> mult  (rec x) (rec y)
@@ -48,7 +54,12 @@ foldExpr cnst rango suma resta mult div exp = case exp of
 
 -- | Evaluar expresiones dado un generador de números aleatorios
 eval :: Expr -> G Float
-eval  = foldr (id) (\r1 r2 -> conGenNormal (dameUno (r1, r2))) (\e1 e2 -> (fst e1 + fst e2,snd e1)) (\e1 e2 -> (fst e1 - fst e2,snd e1)) (\e1 e2 -> (fst e1 * fst e2,snd e1)) (/)
+eval  = foldExpr (\x -> dameUno (x,x))
+                 (\r1 r2 -> dameUno (r1, r2))
+                 (\e1 e2 gen -> (fst (e1 gen) + fst (e2 gen),snd (e1 gen)))
+                 (\e1 e2 gen -> (fst (e1 gen) - fst (e2 gen),snd (e1 gen)))
+                 (\e1 e2 gen -> (fst (e1 gen) * fst (e2 gen),snd (e1 gen)))
+                 (\e1 e2 gen -> (fst (e1 gen) / fst (e2 gen),snd (e1 gen)))
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
