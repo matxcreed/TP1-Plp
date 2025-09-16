@@ -41,7 +41,8 @@ testsAlinearDerecha =
   test
     [ alinearDerecha 6 "hola" ~?= "  hola",
       alinearDerecha 10 "incierticalc" ~?= "incierticalc",
-      completar
+      alinearDerecha 0 "hola" ~?= "hola",
+      alinearDerecha 0 "" ~?= ""
     ]
 
 testsActualizarElem :: Test
@@ -49,7 +50,7 @@ testsActualizarElem =
   test
     [ actualizarElem 0 (+ 10) [1, 2, 3] ~?= [11, 2, 3],
       actualizarElem 1 (+ 10) [1, 2, 3] ~?= [1, 12, 3],
-      completar
+      actualizarElem 4 (+ 10) [1, 2, 3] ~?= [1, 2, 3]
     ]
 
 testsVacio :: Test
@@ -68,7 +69,7 @@ testsVacio =
               Casillero 6 infinitoPositivo 0 0
             ], 
       casilleros (vacio 3 (-1, 5))
-        ~?= [ Casillero infinitoNegativo 0 0 0,
+        ~?= [ Casillero infinitoNegativo (-1) 0 0,
               Casillero (-1) 1 0 0,
               Casillero 1 3 0 0,
               Casillero 3 5 0 0,
@@ -101,14 +102,20 @@ testsAgregar =
                   Casillero 4 6 0 0,
                   Casillero 6 infinitoPositivo 0 0
                 ],
-          completar
+          casilleros (agregar 2 (agregar (-1) h0))
+            ~?= [ Casillero infinitoNegativo 0 1 50, 
+                  Casillero 0 2 0 0,
+                  Casillero 2 4 1 50,
+                  Casillero 4 6 0 0,
+                  Casillero 6 infinitoPositivo 0 0
+                ]
         ]
 
 testsHistograma :: Test
 testsHistograma =
   test
     [ histograma 4 (1, 5) [1, 2, 3] ~?= agregar 3 (agregar 2 (agregar 1 (vacio 4 (1, 5)))),
-      completar
+      histograma 1 (1, 5) [] ~?= vacio 1 (1, 5)
     ]
 
 testsCasilleros :: Test
@@ -128,19 +135,27 @@ testsCasilleros =
               Casillero 4.0 6.0 0 0.0,
               Casillero 6.0 infinitoPositivo 0 0.0
             ],
-      completar
+      casilleros (fst (evalHistograma 3 1 (Const 1.0) (genNormalConSemilla 0))) 
+        ~?= [Casillero infinitoNegativo 0.0 0 0.0,
+             Casillero 0.0 0.6666667 0 0.0,
+             Casillero 0.6666667 1.3333334 1 100.0,
+             Casillero 1.3333334 2.0 0 0.0,
+             Casillero 2.0 infinitoPositivo 0 0.0
+             ]
     ]
 
 testsRecr :: Test
 testsRecr =
   test
-    [ completar
+    [ mostrar (Div (Suma (Rango 1 5) (Mult (Const 3) (Rango 100 105))) (Const 2)) 
+        ~?= "(1.0~5.0 + (3.0 * 100.0~105.0)) / 2.0"
     ]
 
 testsFold :: Test
 testsFold =
   test
-    [ completar
+    [ fst (eval (Suma (Rango 1 5) (Const 1)) genFijo) ~?= 4.0,
+      fst (eval (Const 1) genFijo) ~?= 1.0
     ]
 
 testsEval :: Test
@@ -149,15 +164,25 @@ testsEval =
     [ fst (eval (Suma (Rango 1 5) (Const 1)) genFijo) ~?= 4.0,
       fst (eval (Suma (Rango 1 5) (Const 1)) (genNormalConSemilla 0)) ~?= 3.7980492,
       -- el primer rango evalua a 2.7980492 y el segundo a 3.1250308
-      fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0)) ~?= 5.92308,
-      completar
+      fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0)) ~?= 5.5960984,
+      fst (eval (Const 1) genFijo) ~?= 1.0,
+      fst (eval (Div (Suma (Rango 1 5) (Mult (Const 3) (Rango 100 105))) (Const 2)) (genNormalConSemilla 0)) 
+        ~?= 154.77036
     ]
 
 testsArmarHistograma :: Test
 testsArmarHistograma =
   test -- casos borde son testeados en evalHistograma
     [ casilleros (fst (armarHistograma 5 10 (dameUno (1.0, 20.0)) (genNormalConSemilla 1)))
-        ~?= [Casillero infinitoNegativo 4.459915 0 0.0,Casillero 4.459915 7.7596827 1 10.0,Casillero 7.7596827 11.05945 3 30.000002,Casillero 11.05945 14.359217 2 20.0,Casillero 14.359217 17.658985 3 30.000002,Casillero 17.658985 20.958752 1 10.0,Casillero 20.958752 infinitoPositivo 0 0.0]]
+        ~?= [Casillero infinitoNegativo 4.459915 0 0.0,
+             Casillero 4.459915 7.7596827 1 10.0,
+             Casillero 7.7596827 11.05945 3 30.000002,
+             Casillero 11.05945 14.359217 2 20.0,
+             Casillero 14.359217 17.658985 3 30.000002,
+             Casillero 17.658985 20.958752 1 10.0,
+             Casillero 20.958752 infinitoPositivo 0 0.0
+             ]
+    ]
 
 testsEvalHistograma :: Test
 testsEvalHistograma =

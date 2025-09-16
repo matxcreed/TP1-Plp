@@ -62,6 +62,9 @@ eval  = foldExpr (\x -> dameUno (x,x))
                  (\e1 e2 gen -> (fst (e1 gen) * fst (e2 gen),snd (e1 gen)))
                  (\e1 e2 gen -> (fst (e1 gen) / fst (e2 gen),snd (e1 gen)))
 
+-- >>> fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0))   
+-- 5.5960984
+
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
 armarHistograma :: Int -> Int -> G Float -> G Histograma
