@@ -68,6 +68,9 @@ armarHistograma :: Int -> Int -> G Float -> G Histograma
 armarHistograma m n f = \gen -> (histograma m (rango95 (fst (genLista gen))) (fst (genLista gen)), (snd (genLista gen)))
                           where genLista = muestra f n
 
+-- >>> armarHistograma 5 10 (dameUno (1.0, 20.0)) (genNormalConSemilla 1)
+-- (Histograma 4.459915 3.2997673 [0,1,3,2,3,1,0],<Gen>)
+
 -- | @evalHistograma m n e g@ evalúa la expresión @e@ usando el generador @g@ @n@ veces
 -- devuelve un histograma con @m@ casilleros y rango calculado con @rango95@ para abarcar el 95% de confianza de los valores.
 -- @n@ debe ser mayor que 0.
