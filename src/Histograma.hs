@@ -31,22 +31,46 @@ data Histograma = Histograma Float Float [Int]
 -- | Inicializa un histograma vacío con @n@ casilleros para representar
 -- valores en el rango y 2 casilleros adicionales para los valores fuera del rango.
 -- Require que @l < u@ y @n >= 1@.
+--vacio :: Int -> (Float, Float) -> Histograma
+--vacio n (l, u) = Histograma l ((u - l)/ fromIntegral n) [0|_ <- [0..(n+1)]]
+
+---- correccion-----
 vacio :: Int -> (Float, Float) -> Histograma
-vacio n (l, u) = Histograma l ((u - l)/ fromIntegral n) [0|_ <- [0..(n+1)]]
+vacio n (l, u) = Histograma l ((u-l) / fromIntegral n) (replicate (n+2) 0)
 
-agregar :: Float -> Histograma -> Histograma
-agregar x (Histograma i t cs) = Histograma i t (actualizarElem pos (+1) cs)
-                                where lista = listaDeIntervalos (Histograma i t cs)
-                                      pos = ubicarPos x lista
 
+----ej 4
+--agregar :: Float -> Histograma -> Histograma
+--agregar x (Histograma i t cs) = Histograma i t (actualizarElem pos (+1) cs)
+--                                where lista = listaDeIntervalos (Histograma i t cs)
+--                                      pos = ubicarPos x lista
+--
+--
 listaDeIntervalos:: Histograma-> [(Float,Float)]
 listaDeIntervalos (Histograma i t cs) = [ if j==0 then (infinitoNegativo,i)
                                           else if j==len then(i+t*fromIntegral (j-1),infinitoPositivo)
                                           else (i+t*fromIntegral (j-1),i+t*(fromIntegral (j-1)+1))| j <- [0..len]]
                                       where len = length cs - 1
+--
+--ubicarPos:: Float -> [(Float,Float)] -> Int
+--ubicarPos x = foldl (\ac (j,k) -> if j<=x then ac+1 else ac ) (-1)
 
-ubicarPos:: Float -> [(Float,Float)] -> Int
-ubicarPos x = foldl (\ac (j,k) -> if j<=x then ac+1 else ac ) (-1)
+
+----correccion-----
+
+agregar :: Float -> Histograma -> Histograma
+agregar n (Histograma i t cs) = if n < i then Histograma i t (actualizarElem 0 (+1) cs) else 
+                                Histograma i t (actualizarElem (pos ) (+1) cs)
+                                 where pos = min (1+floor((n-i)/t)) (length cs - 1)
+
+  --- uso n-i para calcular cuánto se pasa mi n del inicio del intervalo. si el intervalo inicia en 20, con amplitud de 2
+  --- y mi n es 25 eso quiere decir que me "pasé" 5 unidades del primer casillero,
+  --- para saber en qué casillero caigo, lo divido por t (la amplitud de cada casillero. y me da 2,5.Esto quiere decir que me
+  --- pasé ** 2,5 veces un casillero ** del casillero incial (el de + inf) a esto le aplico floor
+  ---y obtengo que debí caer en el 2 casillero (o sea el tercero, ya que ignoramos el primero por tratarlo en la primera parte del if))
+  
+
+
 
 -- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
 histograma :: Int -> (Float, Float) -> [Float] -> Histograma
