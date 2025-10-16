@@ -39,9 +39,11 @@ recrExpr cnst rango suma resta mult div exp = case exp of
                                               where rec = recrExpr cnst rango suma resta mult div
 
 -- foldExpr :: ... anotar el tipo ...
-foldExpr :: (Float->b)->(Float->Float->b)->(b->b->b)->
-                    (b->b->b)->(b->b->b)->
-                    (b->b->b)-> Expr -> b
+foldExpr :: (Float->b)->(Float->Float->b)->
+            (b->b->b)->
+            (b->b->b)->
+            (b->b->b)->
+            (b->b->b)-> Expr -> b
 foldExpr cnst rango suma resta mult div = recrExpr cnst rango (\_ _ rx ry -> suma rx ry) 
                                                               (\_ _ rx ry -> resta rx ry) 
                                                               (\_ _ rx ry -> mult rx ry) 
@@ -58,15 +60,19 @@ foldExpr cnst rango suma resta mult div = recrExpr cnst rango (\_ _ rx ry -> sum
 
 -- | Evaluar expresiones dado un generador de números aleatorios
 eval :: Expr -> G Float
-eval  = foldExpr (\x -> dameUno (x,x))
+eval  = foldExpr (\x gen -> (x, gen))
                  (\r1 r2 -> dameUno (r1, r2))
-                 (\e1 e2 gen -> (fst (e1 gen) + fst (e2 gen),snd (e1 gen)))
-                 (\e1 e2 gen -> (fst (e1 gen) - fst (e2 gen),snd (e1 gen)))
-                 (\e1 e2 gen -> (fst (e1 gen) * fst (e2 gen),snd (e1 gen)))
-                 (\e1 e2 gen -> (fst (e1 gen) / fst (e2 gen),snd (e1 gen)))
-
+                 (operacion (+))
+                 (operacion (-))
+                 (operacion (*))
+                 (operacion (/))
+      where operacion f ex ey gen = let 
+                                      (x, genx) = ex gen
+                                      (y, geny) = ey genx
+                                    in 
+                                      (f x y, geny)
 -- >>> fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0))   
--- 5.5960984
+-- 5.92308
 
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
