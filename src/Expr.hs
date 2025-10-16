@@ -44,9 +44,9 @@ foldExpr :: (Float->b)->(Float->Float->b)->
             (b->b->b)->
             (b->b->b)->
             (b->b->b)-> Expr -> b
-foldExpr cnst rango suma resta mult div = recrExpr cnst rango (\_ _ rx ry -> suma rx ry) 
-                                                              (\_ _ rx ry -> resta rx ry) 
-                                                              (\_ _ rx ry -> mult rx ry) 
+foldExpr cnst rango suma resta mult div = recrExpr cnst rango (\_ _ rx ry -> suma rx ry)
+                                                              (\_ _ rx ry -> resta rx ry)
+                                                              (\_ _ rx ry -> mult rx ry)
                                                               (\_ _ rx ry -> div rx ry)
 --foldExpr cnst rango suma resta mult div exp = case exp of
 --                                              Const x   -> cnst x
@@ -61,15 +61,15 @@ foldExpr cnst rango suma resta mult div = recrExpr cnst rango (\_ _ rx ry -> sum
 -- | Evaluar expresiones dado un generador de números aleatorios
 eval :: Expr -> G Float
 eval  = foldExpr (\x gen -> (x, gen))
-                 (\r1 r2 -> dameUno (r1, r2))
+                 (curry dameUno) -- (\r1 r2 -> dameUno (r1,r2))
                  (operacion (+))
                  (operacion (-))
                  (operacion (*))
                  (operacion (/))
-      where operacion f expX expY gen = let 
+      where operacion f expX expY gen = let
                                       (x, genX) = expX gen
                                       (y, genY) = expY genX
-                                    in 
+                                    in
                                       (f x y, genY)
 -- >>> fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0))   
 -- 5.92308
@@ -77,11 +77,12 @@ eval  = foldExpr (\x gen -> (x, gen))
 -- | @armarHistograma m n f g@ arma un histograma con @m@ casilleros
 -- a partir del resultado de tomar @n@ muestras de @f@ usando el generador @g@.
 armarHistograma :: Int -> Int -> G Float -> G Histograma
-armarHistograma m n f = \gen -> (histograma m (rango95 (fst (genLista gen))) (fst (genLista gen)), (snd (genLista gen)))
-                          where genLista = muestra f n
+armarHistograma m n f gen = (histograma m (rango95 lista) lista, genLista)
+                          where (lista, genLista) = muestra f n gen
 
--- >>> armarHistograma 5 10 (dameUno (1.0, 20.0)) (genNormalConSemilla 1)
--- (Histograma 4.459915 3.2997673 [0,1,3,2,3,1,0],<Gen>)
+
+-- >>> armarHistograma 5 10 (dameUno (1.0, 20.0)) (genNormalConSemilla 987)
+-- (Histograma 4.769478 2.8134034 [0,2,2,2,3,1,0],<Gen>)
 
 -- | @evalHistograma m n e g@ evalúa la expresión @e@ usando el generador @g@ @n@ veces
 -- devuelve un histograma con @m@ casilleros y rango calculado con @rango95@ para abarcar el 95% de confianza de los valores.
