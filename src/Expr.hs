@@ -42,15 +42,18 @@ recrExpr cnst rango suma resta mult div exp = case exp of
 foldExpr :: (Float->b)->(Float->Float->b)->(b->b->b)->
                     (b->b->b)->(b->b->b)->
                     (b->b->b)-> Expr -> b
-foldExpr cnst rango suma resta mult div exp = case exp of
-                                              Const x   -> cnst x
-                                              Rango x y -> rango x y
-                                              Suma x y  -> suma  (rec x) (rec y)
-                                              Resta x y -> resta (rec x) (rec y)
-                                              Mult x  y -> mult  (rec x) (rec y)
-                                              Div x  y  -> div   (rec x) (rec y)
-                                              where rec = foldExpr cnst rango suma resta mult div
-
+foldExpr cnst rango suma resta mult div = recrExpr cnst rango (\_ _ rx ry -> suma rx ry) 
+                                                              (\_ _ rx ry -> resta rx ry) 
+                                                              (\_ _ rx ry -> mult rx ry) 
+                                                              (\_ _ rx ry -> div rx ry)
+--foldExpr cnst rango suma resta mult div exp = case exp of
+--                                              Const x   -> cnst x
+--                                              Rango x y -> rango x y
+--                                              Suma x y  -> suma  (rec x) (rec y)
+--                                              Resta x y -> resta (rec x) (rec y)
+--                                              Mult x  y -> mult  (rec x) (rec y)
+--                                              Div x  y  -> div   (rec x) (rec y)
+--                                              where rec = foldExpr cnst rango suma resta mult div
 
 
 -- | Evaluar expresiones dado un generador de números aleatorios
