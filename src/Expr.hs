@@ -66,11 +66,11 @@ eval  = foldExpr (\x gen -> (x, gen))
                  (operacion (-))
                  (operacion (*))
                  (operacion (/))
-      where operacion f ex ey gen = let 
-                                      (x, genx) = ex gen
-                                      (y, geny) = ey genx
+      where operacion f expX expY gen = let 
+                                      (x, genX) = expX gen
+                                      (y, genY) = expY genX
                                     in 
-                                      (f x y, geny)
+                                      (f x y, genY)
 -- >>> fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0))   
 -- 5.92308
 
