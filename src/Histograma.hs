@@ -59,22 +59,24 @@ listaDeIntervalos (Histograma i t cs) = [ if j==0 then (infinitoNegativo,i)
 ----correccion-----
 
 agregar :: Float -> Histograma -> Histograma
-agregar n (Histograma i t cs) = if n < i then Histograma i t (actualizarElem 0 (+1) cs) else 
-                                Histograma i t (actualizarElem (pos ) (+1) cs)
-                                 where pos = min (1+floor((n-i)/t)) (length cs - 1)
+agregar n (Histograma i t cs) = if n < i then Histograma i t (actualizarElem 0 (+1) cs) else
+                                Histograma i t (actualizarElem pos (+1) cs)
+                                 where pos = min (1+floor ((n-i)/t)) (length cs - 1)
 
   --- uso n-i para calcular cuánto se pasa mi n del inicio del intervalo. si el intervalo inicia en 20, con amplitud de 2
   --- y mi n es 25 eso quiere decir que me "pasé" 5 unidades del primer casillero,
   --- para saber en qué casillero caigo, lo divido por t (la amplitud de cada casillero. y me da 2,5.Esto quiere decir que me
   --- pasé ** 2,5 veces un casillero ** del casillero incial (el de + inf) a esto le aplico floor
   ---y obtengo que debí caer en el 2 casillero (o sea el tercero, ya que ignoramos el primero por tratarlo en la primera parte del if))
-  
+
 
 
 
 -- | Arma un histograma a partir de una lista de números reales con la cantidad de casilleros y rango indicados.
+
+-- version anterior: histograma n interv = foldl (\ac f -> agregar f ac) (vacio n interv)
 histograma :: Int -> (Float, Float) -> [Float] -> Histograma
-histograma n interv = foldl (\ac f -> agregar f ac) (vacio n interv)
+histograma n interv = foldr agregar (vacio n interv)
 
 -- | Un `Casillero` representa un casillero del histograma con sus límites, cantidad y porcentaje.
 -- Invariante: Sea @Casillero m1 m2 c p@ entonces @m1 < m2@, @c >= 0@, @0 <= p <= 100@
