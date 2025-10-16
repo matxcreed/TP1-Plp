@@ -100,8 +100,10 @@ casPorcentaje :: Casillero -> Float
 casPorcentaje (Casillero _ _ _ p) = p
 
 -- | Dado un histograma, devuelve la lista de casilleros con sus límites, cantidad y porcentaje.
+-- el zip junta la lista de numeros por casillero con la lista de intervalos para armar los casilleros
 casilleros :: Histograma -> [Casillero]
-casilleros (Histograma i t cs) = zipWith (\cant (minCas,maxCas) -> Casillero minCas maxCas cant (if total == 0 then 0 else (fromIntegral cant/total)*100.0)) cs intervalos
+casilleros (Histograma i t cs) = zipWith (\cant (minCas,maxCas) -> Casillero minCas maxCas cant (porcentaje cant)) cs intervalos
                             where total = fromIntegral (sum cs)
                                   numCas = length cs
+                                  porcentaje n = if total == 0 then 0 else (fromIntegral n/total)*100.0
                                   intervalos = [(infinitoNegativo, i)] ++ take (numCas-2) (iterate (\(x,y) -> (x+t, y+t)) (i, i+t-1)) ++ [(i+t*fromIntegral numCas, infinitoPositivo)] --listaDeIntervalos (Histograma i t cs)
