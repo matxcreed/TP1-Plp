@@ -46,11 +46,11 @@ vacio n (l, u) = Histograma l ((u-l) / fromIntegral n) (replicate (n+2) 0)
 --                                      pos = ubicarPos x lista
 --
 --
-listaDeIntervalos:: Histograma-> [(Float,Float)]
-listaDeIntervalos (Histograma i t cs) = [ if j==0 then (infinitoNegativo,i)
-                                          else if j==len then(i+t*fromIntegral (j-1),infinitoPositivo)
-                                          else (i+t*fromIntegral (j-1),i+t*(fromIntegral (j-1)+1))| j <- [0..len]]
-                                      where len = length cs - 1
+--listaDeIntervalos:: Histograma-> [(Float,Float)]
+--listaDeIntervalos (Histograma i t cs) = [ if j==0 then (infinitoNegativo,i)
+--                                          else if j==len then(i+t*fromIntegral (j-1),infinitoPositivo)
+--                                          else (i+t*fromIntegral (j-1),i+t*(fromIntegral (j-1)+1))| j <- [0..len]]
+--                                      where len = length cs - 1
 --
 --ubicarPos:: Float -> [(Float,Float)] -> Int
 --ubicarPos x = foldl (\ac (j,k) -> if j<=x then ac+1 else ac ) (-1)
