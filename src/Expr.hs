@@ -102,11 +102,11 @@ evalHistograma m n expr = armarHistograma m n (eval expr)
 -- En particular queremos evitar paréntesis en sumas y productos anidados.
 mostrar :: Expr -> String
 mostrar = recrExpr show (\x y -> show x ++ "~" ++ show y) (armarString CESuma " + ") (armarString CEResta " - ") (armarString CEMult " * ") (armarString CEDiv " / ")
-  where listaExpr = [CEConst, CERango]
-        parEn op e r = if op == CEResta then
-                              maybeParen (notElem (constructor e) listaExpr)           r else
-                              maybeParen (notElem (constructor e) (listaExpr ++ [op])) r
-        armarString ce pal e1 e2 r1 r2 = parEn ce e1 r1 ++ pal ++ parEn ce e2 r2
+    where listaExpr = [CEConst, CERango]
+          parEn op e r = if op == CEResta then
+                                maybeParen (notElem (constructor e) listaExpr)           r else
+                                maybeParen (notElem (constructor e) (listaExpr ++ [op])) r
+          armarString ce pal e1 e2 r1 r2 = parEn ce e1 r1 ++ pal ++ parEn ce e2 r2
 
 data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv
   deriving (Show, Eq)
