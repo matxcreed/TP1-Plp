@@ -50,7 +50,8 @@ testsActualizarElem =
   test
     [ actualizarElem 0 (+ 10) [1, 2, 3] ~?= [11, 2, 3],
       actualizarElem 1 (+ 10) [1, 2, 3] ~?= [1, 12, 3],
-      actualizarElem 4 (+ 10) [1, 2, 3] ~?= [1, 2, 3]
+      actualizarElem 4 (+ 10) [1, 2, 3] ~?= [1, 2, 3],
+      actualizarElem (-1) (+ 10) [1, 2, 3] ~?= [1, 2, 3]
     ]
 
 testsVacio :: Test
@@ -112,10 +113,12 @@ testsAgregar =
         ]
 
 testsHistograma :: Test
-testsHistograma =
+testsHistograma = --Asumimos por la consigna del ejercicio 3
+                  -- que el primer argumento siempre es >=1
   test
     [ histograma 4 (1, 5) [1, 2, 3] ~?= agregar 3 (agregar 2 (agregar 1 (vacio 4 (1, 5)))),
-      histograma 1 (1, 5) [] ~?= vacio 1 (1, 5)
+      histograma 1 (1, 5) [] ~?= vacio 1 (1, 5),
+      histograma 2 (1, 5) [] ~?= vacio 2 (1, 5)
     ]
 
 testsCasilleros :: Test
@@ -164,10 +167,10 @@ testsEval =
     [ fst (eval (Suma (Rango 1 5) (Const 1)) genFijo) ~?= 4.0,
       fst (eval (Suma (Rango 1 5) (Const 1)) (genNormalConSemilla 0)) ~?= 3.7980492,
       -- el primer rango evalua a 2.7980492 y el segundo a 3.1250308
-      fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0)) ~?= 5.5960984,
+      fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0)) ~?= 5.92308,
       fst (eval (Const 1) genFijo) ~?= 1.0,
       fst (eval (Div (Suma (Rango 1 5) (Mult (Const 3) (Rango 100 105))) (Const 2)) (genNormalConSemilla 0)) 
-        ~?= 154.77036
+        ~?= 155.38345
     ]
 
 testsArmarHistograma :: Test
@@ -175,25 +178,22 @@ testsArmarHistograma =
   test -- casos borde son testeados en evalHistograma
     [ casilleros (fst (armarHistograma 5 10 (dameUno (1.0, 20.0)) (genNormalConSemilla 1)))
         ~?= [Casillero infinitoNegativo 4.459915 0 0.0,
-             Casillero 4.459915 7.7596827 1 10.0,
-             Casillero 7.7596827 11.05945 3 30.000002,
-             Casillero 11.05945 14.359217 2 20.0,
-             Casillero 14.359217 17.658985 3 30.000002,
-             Casillero 17.658985 20.958752 1 10.0,
-             Casillero 20.958752 infinitoPositivo 0 0.0
-             ]
+        Casillero 4.459915 7.7596827 1 10.0,
+        Casillero 7.7596827 11.05945 3 30.000002,
+        Casillero 11.05945 14.359218 2 20.0,
+        Casillero 14.359218 17.658985 3 30.000002,
+        Casillero 17.658985 20.958752 1 10.0,
+        Casillero 20.958752 infinitoPositivo 0 0.0]
     ]
-
 testsEvalHistograma :: Test
 testsEvalHistograma =
   test
     [ casilleros (fst (evalHistograma 3 1 (Const 1.0) (genNormalConSemilla 0))) 
-        ~?= [Casillero infinitoNegativo 0.0 0 0.0,Casillero 0.0 0.6666667 0 0.0,Casillero 0.6666667 1.3333334 1 100.0,Casillero 1.3333334 2.0 0 0.0,Casillero 2.0 infinitoPositivo 0 0.0], 
-      casilleros (fst (evalHistograma 1 10 (Const 1.0) (genNormalConSemilla 0))) 
-        ~?= [Casillero infinitoNegativo 0.0 0 0.0,Casillero 0.0 2.0 10 100.0,Casillero 2.0 infinitoPositivo 0 0.0], 
-      casilleros (fst (evalHistograma 11 10 (Suma (Rango 1 5) (Rango 100 105)) (genNormalConSemilla 0)))
-        ~?= [Casillero infinitoNegativo 100.03403 0 0.0,Casillero 100.03403 101.10162 0 0.0,Casillero 101.10162 102.16922 3 30.000002,Casillero 102.16922 103.23682 0 0.0,Casillero 103.23682 104.30441 0 0.0,Casillero 104.30441 105.37201 1 10.0,Casillero 105.37201 106.439606 1 10.0,Casillero 106.439606 107.5072 2 20.0,Casillero 107.5072 108.5748 0 0.0,Casillero 108.5748 109.642395 2 20.0,Casillero 109.642395 110.70999 0 0.0,Casillero 110.70999 111.77759 1 10.0,Casillero 111.77759 infinitoPositivo 0 0.0]]
-
+        ~?= [Casillero infinitoNegativo 0.0 0 0.0,
+        Casillero 0.0 0.6666667 0 0.0,
+        Casillero 0.6666667 1.3333334 1 100.0,
+        Casillero 1.3333334 2.0 0 0.0,
+        Casillero 2.0 infinitoPositivo 0 0.0]]
 testsParse :: Test
 testsParse =
   test

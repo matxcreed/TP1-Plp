@@ -107,11 +107,12 @@ mostrar = recrExpr show (\x y -> show x ++ "~" ++ show y)
                         (\e1 e2 r1 r2 -> maybeParen (parEnMult e1) r1 ++ " * " ++ maybeParen (parEnMult e2) r2)
                         (\e1 e2 r1 r2 -> maybeParen (parEnDiv e1) r1 ++ " / " ++ maybeParen (parEnDiv e2) r2)
 
-          where parEnSuma e = constructor e == CEResta || constructor e == CEMult || constructor e == CEDiv
-                parEnResta e = constructor e == CEResta || constructor e == CESuma || constructor e == CEMult || constructor e == CEDiv
-                parEnMult e = constructor e == CEResta || constructor e == CESuma || constructor e == CEDiv
-                parEnDiv e = constructor e == CEResta || constructor e == CEMult || constructor e == CESuma
 
+  where parEnSuma e = constructor e `elem` [CEResta, CEMult, CEDiv]
+        parEnResta e = constructor e `elem` [CEResta, CESuma, CEMult, CEDiv]
+        parEnMult e = constructor e `elem` [CEResta, CESuma, CEDiv]
+        parEnDiv e = constructor e `elem` [CEResta, CEMult, CESuma]
+        
 data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv
   deriving (Show, Eq)
 

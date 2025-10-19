@@ -106,4 +106,4 @@ casilleros (Histograma i t cs) = zipWith (\cant (minCas,maxCas) -> Casillero min
                             where total = fromIntegral (sum cs)
                                   numCas = length cs
                                   porcentaje n = if total == 0 then 0 else (fromIntegral n/total)*100.0
-                                  intervalos = [(infinitoNegativo, i)] ++ take (numCas-2) (iterate (\(x,y) -> (x+t, y+t)) (i, i+t-1)) ++ [(i+t*fromIntegral numCas, infinitoPositivo)] --listaDeIntervalos (Histograma i t cs)
+                                  intervalos = [(infinitoNegativo, i)] ++ take (numCas-2) (iterate (\(x,y) -> (x+t, y+t)) (i, i+t)) ++ [(i+t*fromIntegral (numCas-2), infinitoPositivo)] --listaDeIntervalos (Histograma i t cs)
