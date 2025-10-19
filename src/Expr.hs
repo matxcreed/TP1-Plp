@@ -101,18 +101,13 @@ evalHistograma m n expr = armarHistograma m n (eval expr)
 -- | Mostrar las expresiones, pero evitando algunos paréntesis innecesarios.
 -- En particular queremos evitar paréntesis en sumas y productos anidados.
 mostrar :: Expr -> String
-mostrar = recrExpr show (\x y -> show x ++ "~" ++ show y)
-                        (\e1 e2 r1 r2 -> maybeParen (parEnSuma e1) r1 ++ " + " ++ maybeParen (parEnSuma e2) r2)
-                        (\e1 e2 r1 r2 -> maybeParen (parEnResta e1) r1 ++ " - " ++ maybeParen (parEnResta e2) r2)
-                        (\e1 e2 r1 r2 -> maybeParen (parEnMult e1) r1 ++ " * " ++ maybeParen (parEnMult e2) r2)
-                        (\e1 e2 r1 r2 -> maybeParen (parEnDiv e1) r1 ++ " / " ++ maybeParen (parEnDiv e2) r2)
+mostrar = recrExpr show (\x y -> show x ++ "~" ++ show y) (armarString CESuma " + ") (armarString CEResta " - ") (armarString CEMult " * ") (armarString CEDiv " / ")
+  where listaExpr = [CEConst, CERango]
+        parEn op e r = if op == CEResta then
+                              maybeParen (notElem (constructor e) listaExpr)           r else
+                              maybeParen (notElem (constructor e) (listaExpr ++ [op])) r
+        armarString ce pal e1 e2 r1 r2 = parEn ce e1 r1 ++ pal ++ parEn ce e2 r2
 
-
-  where parEnSuma e = constructor e `elem` [CEResta, CEMult, CEDiv]
-        parEnResta e = constructor e `elem` [CEResta, CESuma, CEMult, CEDiv]
-        parEnMult e = constructor e `elem` [CEResta, CESuma, CEDiv]
-        parEnDiv e = constructor e `elem` [CEResta, CEMult, CESuma]
-        
 data ConstructorExpr = CEConst | CERango | CESuma | CEResta | CEMult | CEDiv
   deriving (Show, Eq)
 

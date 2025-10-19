@@ -68,7 +68,7 @@ testsVacio =
               Casillero 2 4 0 0,
               Casillero 4 6 0 0,
               Casillero 6 infinitoPositivo 0 0
-            ], 
+            ],
       casilleros (vacio 3 (-1, 5))
         ~?= [ Casillero infinitoNegativo (-1) 0 0,
               Casillero (-1) 1 0 0,
@@ -104,11 +104,18 @@ testsAgregar =
                   Casillero 6 infinitoPositivo 0 0
                 ],
           casilleros (agregar 2 (agregar (-1) h0))
-            ~?= [ Casillero infinitoNegativo 0 1 50, 
+            ~?= [ Casillero infinitoNegativo 0 1 50,
                   Casillero 0 2 0 0,
                   Casillero 2 4 1 50,
                   Casillero 4 6 0 0,
                   Casillero 6 infinitoPositivo 0 0
+                ],
+          casilleros (agregar 10 h0)
+            ~?= [ Casillero infinitoNegativo 0 0 0,
+                  Casillero 0 2 0 0,
+                  Casillero 2 4 0 0,
+                  Casillero 4 6 0 0,
+                  Casillero 6 infinitoPositivo 1 100 -- El 100% de los valores están acá
                 ]
         ]
 
@@ -138,7 +145,7 @@ testsCasilleros =
               Casillero 4.0 6.0 0 0.0,
               Casillero 6.0 infinitoPositivo 0 0.0
             ],
-      casilleros (fst (evalHistograma 3 1 (Const 1.0) (genNormalConSemilla 0))) 
+      casilleros (fst (evalHistograma 3 1 (Const 1.0) (genNormalConSemilla 0)))
         ~?= [Casillero infinitoNegativo 0.0 0 0.0,
              Casillero 0.0 0.6666667 0 0.0,
              Casillero 0.6666667 1.3333334 1 100.0,
@@ -147,18 +154,23 @@ testsCasilleros =
              ]
     ]
 
+expEjemplo :: Expr
+expEjemplo = Div (Mult (Suma (Const 1) (Const 2)) (Rango  3 4)) (Resta (Const 5) (Const 6))
+-- el ejemplo usa todos los constructores, por lo tanto los test que lo usen abarcan todos los
+-- casos del tipo
+
 testsRecr :: Test
 testsRecr =
   test
-    [ mostrar (Div (Suma (Rango 1 5) (Mult (Const 3) (Rango 100 105))) (Const 2)) 
-        ~?= "(1.0~5.0 + (3.0 * 100.0~105.0)) / 2.0"
+    [ recrExpr Const Rango (\_ _ -> Suma) (\_ _ -> Resta) (\_ _ -> Mult) (\_ _ -> Div) expEjemplo
+        ~?= expEjemplo
     ]
 
 testsFold :: Test
 testsFold =
   test
-    [ fst (eval (Suma (Rango 1 5) (Const 1)) genFijo) ~?= 4.0,
-      fst (eval (Const 1) genFijo) ~?= 1.0
+    [ foldExpr Const Rango Suma Resta Mult Div expEjemplo
+       ~?= expEjemplo
     ]
 
 testsEval :: Test
@@ -169,7 +181,7 @@ testsEval =
       -- el primer rango evalua a 2.7980492 y el segundo a 3.1250308
       fst (eval (Suma (Rango 1 5) (Rango 1 5)) (genNormalConSemilla 0)) ~?= 5.92308,
       fst (eval (Const 1) genFijo) ~?= 1.0,
-      fst (eval (Div (Suma (Rango 1 5) (Mult (Const 3) (Rango 100 105))) (Const 2)) (genNormalConSemilla 0)) 
+      fst (eval (Div (Suma (Rango 1 5) (Mult (Const 3) (Rango 100 105))) (Const 2)) (genNormalConSemilla 0))
         ~?= 155.38345
     ]
 
@@ -188,7 +200,7 @@ testsArmarHistograma =
 testsEvalHistograma :: Test
 testsEvalHistograma =
   test
-    [ casilleros (fst (evalHistograma 3 1 (Const 1.0) (genNormalConSemilla 0))) 
+    [ casilleros (fst (evalHistograma 3 1 (Const 1.0) (genNormalConSemilla 0)))
         ~?= [Casillero infinitoNegativo 0.0 0 0.0,
         Casillero 0.0 0.6666667 0 0.0,
         Casillero 0.6666667 1.3333334 1 100.0,
