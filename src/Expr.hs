@@ -49,15 +49,6 @@ foldExpr cnst rango suma resta mult div = recrExpr cnst rango (operacion suma)
                                                               (operacion mult)
                                                               (operacion div)
                                           where operacion f _ _ rx ry = f rx ry
---foldExpr cnst rango suma resta mult div exp = case exp of
---                                              Const x   -> cnst x
---                                              Rango x y -> rango x y
---                                              Suma x y  -> suma  (rec x) (rec y)
---                                              Resta x y -> resta (rec x) (rec y)
---                                              Mult x  y -> mult  (rec x) (rec y)
---                                              Div x  y  -> div   (rec x) (rec y)
---                                              where rec = foldExpr cnst rango suma resta mult div
-
 
 -- | Evaluar expresiones dado un generador de números aleatorios
 eval :: Expr -> G Float
@@ -96,7 +87,7 @@ evalHistograma m n expr = armarHistograma m n (eval expr)
 -- (Histograma 100.03403 1.0675964 [0,0,3,0,0,1,1,2,0,2,0,1,0],<Gen>)
 
 -- >>> evalHistograma 11 10000 (Suma (Rango 1 5) (Rango 100 105)) (genNormalConSemilla 0)
--- (Histograma 100.99388 0.81878525 [241,289,507,825,1080,1350,1426,1333,1117,754,539,287,252],<Gen>)
+-- (Histograma 102.273895 0.5878462 [239,288,522,810,1110,1389,1394,1295,1076,793,520,310,254],<Gen>)
 
 -- | Mostrar las expresiones, pero evitando algunos paréntesis innecesarios.
 -- En particular queremos evitar paréntesis en sumas y productos anidados.

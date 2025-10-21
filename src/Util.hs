@@ -3,13 +3,6 @@ module Util where
 -- | @alinearDerecha n s@ agrega espacios a la izquierda de @s@ hasta que su longitud sea @n@.
 -- Si @s@ ya tiene longitud @>= n@, devuelve @s@.
 
---alinearDerecha :: Int -> String -> String
---alinearDerecha n s
---    | length s >= n = s
---    | otherwise     = replicate (n-length s) ' ' ++ s
-
-
--- correccion
 alinearDerecha :: Int -> String -> String
 alinearDerecha n s = replicate (n-length(s)) ' ' ++ s
 

@@ -31,32 +31,12 @@ data Histograma = Histograma Float Float [Int]
 -- | Inicializa un histograma vacío con @n@ casilleros para representar
 -- valores en el rango y 2 casilleros adicionales para los valores fuera del rango.
 -- Require que @l < u@ y @n >= 1@.
---vacio :: Int -> (Float, Float) -> Histograma
---vacio n (l, u) = Histograma l ((u - l)/ fromIntegral n) [0|_ <- [0..(n+1)]]
 
----- correccion-----
 vacio :: Int -> (Float, Float) -> Histograma
 vacio n (l, u) = Histograma l ((u-l) / fromIntegral n) (replicate (n+2) 0)
 
 
 ----ej 4
---agregar :: Float -> Histograma -> Histograma
---agregar x (Histograma i t cs) = Histograma i t (actualizarElem pos (+1) cs)
---                                where lista = listaDeIntervalos (Histograma i t cs)
---                                      pos = ubicarPos x lista
---
---
---listaDeIntervalos:: Histograma-> [(Float,Float)]
---listaDeIntervalos (Histograma i t cs) = [ if j==0 then (infinitoNegativo,i)
---                                          else if j==len then(i+t*fromIntegral (j-1),infinitoPositivo)
---                                          else (i+t*fromIntegral (j-1),i+t*(fromIntegral (j-1)+1))| j <- [0..len]]
---                                      where len = length cs - 1
---
---ubicarPos:: Float -> [(Float,Float)] -> Int
---ubicarPos x = foldl (\ac (j,k) -> if j<=x then ac+1 else ac ) (-1)
-
-
-----correccion-----
 
 agregar :: Float -> Histograma -> Histograma
 agregar n (Histograma i t cs) = if n < i then Histograma i t (actualizarElem 0 (+1) cs) else
